@@ -1,17 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app=express()
 const port =process.env.PORT || 5000
 
 // Midleware
 app.use(cors())
 app.use(express.json())
- 
-// console.log(process.env.DB_USER);
-// console.log(process.env.DB_PASSWORD);
-
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.frkx4db.mongodb.net/?retryWrites=true&w=majority`;
@@ -28,6 +24,14 @@ async function run(){
         const services= await cursor.toArray();
         res.send(services)
       })
+
+    //   get services singleData to mongodb
+    app.get('/services/:id',async(req,res)=>{
+        const id =req.params.id
+        const quary ={_id: ObjectId(id)}
+        const services= await serviceCollection.findOne(quary)
+        res.send(services)
+    })
    
     //   get products data to mongodb
     app.get('/products',async (req,res)=>{
