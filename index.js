@@ -15,7 +15,10 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run(){
     try{
+        // services collection
       const serviceCollection=client.db('geniusCar').collection('services')
+    //   order Collection
+    const orderCollection =client.db('geniusCar').collection('orders')
       
       //get services data to mongodb    
       app.get('/services',async(req,res)=>{
@@ -39,6 +42,25 @@ async function run(){
         const cursor=serviceCollection.find(quary)
         const products=await cursor.toArray();
         res.send(products)
+    })
+
+    // Oprder APi
+    app.get('/orders',async (req,res)=>{
+        let quary={}
+        if(req?.query?.email){
+            quary={
+                email: req?.query?.email
+            }
+        }
+        const cursor =orderCollection.find(quary)
+        const orders = await cursor.toArray()
+        res.send(orders)
+    })
+   
+    app.post('/orders',async(req,res)=>{
+        const order =req.body
+        const result= await orderCollection.insertOne(order)
+        res.send(result);
     })
     } 
     finally{
