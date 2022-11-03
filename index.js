@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config()
+const jwt =require('jsonwebtoken');
+require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app=express()
 const port =process.env.PORT || 5000
@@ -15,6 +16,15 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run(){
     try{
+      
+        // jwt token
+        app.post('/jwt',(req,res)=>{
+            const user =req.body
+            const token =jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'})
+            res.send({token})
+        })
+   
+
         // services collection
       const serviceCollection=client.db('geniusCar').collection('services')
     //   order Collection
